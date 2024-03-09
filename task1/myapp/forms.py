@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import User
+from .models import User,BlogPost,Category
 
 class LoginForm(forms.Form):
     username = forms.CharField(
@@ -63,3 +63,18 @@ class SignUpForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('username','first_name','last_name','email','password1','password2','is_doctor','is_patient','profile_picture','address','city','state','pincode')
+
+
+class BlogPostForm(forms.ModelForm):
+    class Meta:
+        model = BlogPost
+        fields = ['title', 'image', 'category', 'summary', 'content', 'is_draft']
+        labels = {'image':'Upload Image',}
+        widgets = {
+            'title':forms.TextInput(attrs={'class':'form-control'}),
+            'profile_picture' :forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-control'}, choices=Category.CATEGORY_CHOICES),
+            'summary': forms.Textarea(attrs={'class': 'form-control'}),
+            'content': forms.Textarea(attrs={'class': 'form-control'}),
+            'is_draft': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }

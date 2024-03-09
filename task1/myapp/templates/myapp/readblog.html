@@ -1,0 +1,44 @@
+{% extends "myapp/base.html" %}
+{% block nav %}
+    <nav class="navbar navbar-expand-lg" style="background-color: #e3f2fd;">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">Navbar</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              {% if request.user.is_authenticated %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url "Doctor" %}">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url "logout" %}">Log out</a>
+              </li>
+              {% else %}
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{%url 'dashboard'%}">Home</a>
+              </li>
+              {% endif %}
+      </nav>
+{% endblock nav %}
+{% block main-content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2>{{ post.title }}</h2>
+                    
+                </div>
+                <div class="card-body">
+                    <img src="{{ post.image.url }}" style="max-width: 50%; height: auto;  border-radius: 8px; margin-bottom: 20px;" alt="{{ post.title }}">
+                    <p><strong>Category: </strong>  {{ post.category }}</p>
+                    <p>{{ post.summary }}</p>
+                    <p>{{ post.content }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock main-content %}

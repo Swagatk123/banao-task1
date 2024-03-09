@@ -12,6 +12,17 @@ urlpatterns = [
     path('doctor',Doctor,name='Doctor'),
     path('',Home,name='dashboard'),
     path('logout/', logout_view, name='logout'),
-    path('error/',Error,name="error")
+    path('error/',Error,name="error"),
+    path('createblog/',create_blog,name='create_blog'),
+    path('yourblogs/',doctorsBlog,name='doctorsblog'),
+    path('readblog/<int:id>/',read_more,name='read_more'),
+    path('editblog/<int:id>/',edit_blog,name='edit_blog'),
+    path('allblog/',allBlog,name='allblog'),
+    path('mentalhealth/',mental,name='mental_health'),
+    path('heartdisease/',Heart,name='Heart_Disease'),
+    path('covid/',Covid,name='Covid'),
+    path('immunization/',Immune,name='Immunization'),
+    path('unauthorized/',unauthorized,name='unauthorized'),
+    
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

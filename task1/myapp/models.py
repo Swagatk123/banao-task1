@@ -46,4 +46,35 @@ class User(AbstractUser):
     address = models.CharField(max_length=100,blank=True)
     city = models.CharField(max_length=50,blank=True)
     state = models.CharField(choices=STATE_CHOICES,max_length=50,blank=True)
-    pincode = models.CharField(max_length=10,blank=True)    
+    pincode = models.CharField(max_length=10,blank=True)
+
+class Category(models.Model):
+    MENTAL_HEALTH = 'Mental Health'
+    HEART_DISEASE = 'Heart Disease'
+    COVID_19 = 'Covid19'
+    IMMUNIZATION = 'Immunization'
+
+    CATEGORY_CHOICES = [
+        (MENTAL_HEALTH, 'Mental Health'),
+        (HEART_DISEASE, 'Heart Disease'),
+        (COVID_19, 'Covid19'),
+        (IMMUNIZATION, 'Immunization'),
+    ]
+    name = models.CharField(max_length=100, choices=CATEGORY_CHOICES)
+
+    def __str__(self):
+        return self.name
+    
+class BlogPost(models.Model):
+    title = models.CharField(max_length=200)
+    image = models.ImageField(upload_to='blog_images/',null=True,blank=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    summary = models.TextField()
+    content = models.TextField()
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    is_draft = models.BooleanField('Is Draft',default=True)
+
+    def __str__(self):
+        return self.title
+    
+  
