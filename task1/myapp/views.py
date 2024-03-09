@@ -97,7 +97,7 @@ def edit_blog(request,id):
     
 def allBlog(request):
     allblogs = BlogPost.objects.filter(is_draft=False)
-    return render(request,'myapp/allblogs.html',{'blog_posts':allblogs,'Mental':mental})
+    return render(request,'myapp/allblogs.html',{'blog_posts':allblogs})
 
 def mental(request):
     mental = BlogPost.objects.filter(category=1,is_draft=False)
