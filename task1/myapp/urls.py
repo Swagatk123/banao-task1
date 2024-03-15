@@ -23,6 +23,9 @@ urlpatterns = [
     path('covid/',Covid,name='Covid'),
     path('immunization/',Immune,name='Immunization'),
     path('unauthorized/',unauthorized,name='unauthorized'),
+    path('doctorslist/',list_doctors,name='doctorslist'),
+    path('bookappointment/<int:doctor_id>/',book_appointment,name='bookappointment'),
+    path('appointmentconfirmation<int:appointment_id>/',appointment_confirmation,name='appointment_confirmation')
     
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

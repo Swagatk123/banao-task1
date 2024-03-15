@@ -1,0 +1,12 @@
+{% extends "myapp/base.html" %}
+{% block main-content %}
+<div class="container">
+    <h1>Appointment Confirmation</h1>
+    <p>Your appointment with {{ appointment.doctor_name }} has been successfully booked.</p>
+    <p>Date: {{ appointment.date }}</p>
+    <p>Start Time: {{ appointment.start_time }}</p>
+    <p>End Time: {{ appointment.end_time }}</p>
+    <p><a href="{% url "Patient" %}" class="btn btn-outline-danger">return to Dashboard</a></p>
+</div>
+{% endblock main-content %}
+

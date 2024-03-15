@@ -72,9 +72,14 @@ class BlogPostForm(forms.ModelForm):
         labels = {'image':'Upload Image',}
         widgets = {
             'title':forms.TextInput(attrs={'class':'form-control'}),
-            'profile_picture' :forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'image' :forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'category': forms.Select(attrs={'class': 'form-control'}, choices=Category.CATEGORY_CHOICES),
             'summary': forms.Textarea(attrs={'class': 'form-control'}),
             'content': forms.Textarea(attrs={'class': 'form-control'}),
             'is_draft': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+
+class AppointmentForm(forms.Form):
+    required_speciality = forms.CharField(max_length=100)
+    date_of_appointment = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    start_time_of_appointment = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))

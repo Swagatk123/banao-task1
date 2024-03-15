@@ -1,0 +1,42 @@
+{% extends "myapp/base.html" %}
+{% block extra_css %}
+<style>
+    .img-fluid {
+        height: 200px;
+        width: auto;
+        object-fit:contain; 
+    }
+</style>
+{% endblock %}
+{% block main-content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="section-header text-center pb-5">
+              <h2>Our Team of Doctors</h2>
+              <p>Schedule your appointment with one of our dedicated doctors, matching their expertise <br>to your individual healthcare requirements.</p>
+            </div>
+          </div>
+        {% for doctor in doctors %}
+        <div class="col-md-3 mx-4 shadow-lg">
+            <div class="card border-0">
+                <img src="{{ doctor.profile_picture.url }}" class="img-fluid my-3" alt="{{ doctor.first_name }}">
+                <div class="card-body">
+                    <h5 class="card-title">Dr. {{ doctor.first_name|capfirst }} {{doctor.last_name}}</h5>
+                    <p class="card-text">MBBS</p>
+                    <p>Ratings: <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star"></i></p>
+                    <a href="{% url "bookappointment" doctor.id %}" class="btn btn-primary">Book Appointment</a>
+                    <p class="text-center mt-5">
+                    <i class="bi bi-twitter text-dark mx-1"></i>
+                    <i class="bi bi-facebook text-dark mx-1"></i>
+                    <i class="bi bi-linkedin text-dark mx-1"></i>
+                    <i class="bi bi-instagram text-dark mx-1"></i>
+                  </p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+       
+{% endblock main-content %}

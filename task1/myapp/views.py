@@ -1,13 +1,96 @@
 from django.http import HttpResponseForbidden
 from django.shortcuts import render,redirect
-from .forms import SignUpForm,LoginForm,BlogPostForm
+from .forms import SignUpForm,LoginForm,BlogPostForm,AppointmentForm
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .models import BlogPost
+from .models import BlogPost,User,Appointment
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from datetime import datetime, timedelta
+from google.auth.transport.requests import Request
+import json
+import requests
 # Create your views here.
+SCOPES = ["https://www.googleapis.com/auth/calendar"]
 def Index(request):
     return render(request,'myapp/base.html')
+
+def list_doctors(request):
+    doctors = User.objects.filter(is_doctor=True)
+    return render(request, 'myapp/alldoctors.html', {'doctors': doctors})
+
+def book_appointment(request, doctor_id):
+    doctor = User.objects.get(id=doctor_id)
+    if request.method == 'POST':
+        form = AppointmentForm(request.POST)
+        if form.is_valid():
+            speciality = form.cleaned_data['required_speciality']
+            date = form.cleaned_data['date_of_appointment']
+            start_time = form.cleaned_data['start_time_of_appointment']
+            start_datetime = datetime.combine(date, start_time)
+            end_datetime = start_datetime + timedelta(minutes=45)
+            create_calendar_event(doctor.first_name,doctor.email, date, start_time)
+            appointment = Appointment(doctor=doctor,required_speciality=speciality, date=date, start_time=start_time, end_time=end_datetime)
+            appointment.save()
+
+            return redirect('appointment_confirmation', appointment_id=appointment.id)
+    else:
+        form = AppointmentForm()
+    return render(request, 'myapp/book_appointment.html', {'doctor': doctor, 'form': form})
+
+# def create_calendar_event(doctor_name, date, start_time):
+#     creds = Credentials.from_authorized_user_file("myapp/creds.json", SCOPES)
+#     service = build('calendar', 'v3', credentials=creds)
+#     event = {
+#         'summary': f'Appointment with {doctor_name}',
+#         'description': 'Appointment booked through your application',
+#         'start': {
+#             'dateTime': f'{date}T{start_time}:00',
+#             'timeZone': 'Asia/Kolkata',
+#         },
+#         'end': {
+#             'dateTime': f'{date}T{start_time}:00',
+#             'timeZone': 'Asia/Kolkata',
+#         },
+#     }
+#     event = service.events().insert(calendarId='primary', body=event).execute()
+#     print('Event created: %s' % (event.get('htmlLink')))
+
+API_KEY = 'AIzaSyARsjMLfFTwl-QpAIytUROgLg_CSCrQsvk'
+from google.oauth2 import service_account
+import googleapiclient.discovery
+SERVICE_ACCOUNT_FILE = 'myapp/noble-velocity-417305-fbb507a57fa4.json'
+creds = service_account.Credentials.from_service_account_file(
+    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+service = googleapiclient.discovery.build('calendar', 'v3', credentials=creds)
+
+def create_calendar_event(doctor_name,doctor_email, date, start_time):
+
+    event = {
+        'summary': f'Appointment with {doctor_name}',
+        'description': 'Appointment booked through your application',
+        'start': {
+            'dateTime': f'{date}T{start_time}:00',
+            'timeZone': 'Asia/Kolkata',
+        },
+        'end': {
+            'dateTime': f'{date}T{start_time}:00',
+            'timeZone': 'Asia/Kolkata',
+        },
+    }
+
+    try:
+        service.events().insert(calendarId=doctor_email, body=event).execute()
+        print('Event created successfully.')
+    except Exception as e:
+        print('An error occurred:', e)
+
+def appointment_confirmation(request, appointment_id):
+    appointment = Appointment.objects.get(id=appointment_id)
+    return render(request, 'myapp/appointment_confirmation.html', {'appointment': appointment})
+
 
 def register(request):
     msg = None
@@ -69,6 +152,7 @@ def doctorsBlog(request):
         return redirect('unauthorized')
     user = request.user
     blogs = BlogPost.objects.filter(author=user)
+    
     return render(request,'myapp/doctorsblog.html',{'blog_posts':blogs})
 
 def read_more(request,id):
@@ -125,9 +209,13 @@ def Home(request):
 
 @login_required
 def Doctor(request):
+    user = request.user
     if not request.user.is_doctor:
         return redirect('unauthorized')
-    return render(request,'myapp/doctor.html')
+    appointments = Appointment.objects.filter(doctor=user,date__gte=datetime.now())
+    has_upcoming_appointment = appointments
+    print(appointments)
+    return render(request,'myapp/doctor.html',{'has_upcoming_appointment':has_upcoming_appointment})
 
 @login_required
 def Patient(request):

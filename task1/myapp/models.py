@@ -77,4 +77,10 @@ class BlogPost(models.Model):
     def __str__(self):
         return self.title
     
+class Appointment(models.Model):
+    doctor = models.ForeignKey(User, on_delete=models.CASCADE)
+    required_speciality = models.CharField(max_length=100)
+    date = models.DateField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
   

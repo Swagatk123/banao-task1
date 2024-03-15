@@ -1,0 +1,22 @@
+{% extends "myapp/base.html" %}
+
+{% block main-content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6 ">
+    <h2 class="bg-dark-subtle mt-5">Book Appointment with Dr. {{ doctor.first_name|capfirst }}</h2>
+    <div class="card p-5">
+    <form method="post" class="mb-3">
+        {% csrf_token %}
+    {% for fm in form %}
+        <div class="form-group mb-4">
+        {{fm.label_tag}} {{fm}} <small class="text-danger">{{fm.errors|striptags}}</small>
+        </div>
+    {% endfor %}
+        <button type="submit" class="btn btn-primary">Confirm Appointment</button>
+    </form>
+</div>
+</div>
+</div>
+</div>
+{% endblock main-content %}
